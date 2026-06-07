@@ -133,8 +133,8 @@ body::before {
   border-radius: 2px;
   display: flex;
   flex-direction: column;
-  /* WAŻNE: bez overflow:hidden żeby tagi były widoczne */
   position: relative;
+  /* overflow: visible — NIE hidden, żeby tagi były widoczne */
   transition: border-color .2s;
 }
 .card:hover { border-color: var(--border2); }
@@ -201,12 +201,11 @@ body::before {
 .player-list { flex: 1; }
 
 .player-row {
-  display: grid;
-  grid-template-columns: 28px minmax(0, 1fr) auto;
-  align-items: start;
+  /* flex zamiast grid — grid z fixed columns ucinał tagi na mobile */
+  display: flex;
+  align-items: flex-start;
   border-bottom: 1px solid var(--border);
   animation: slideIn .18s ease;
-  overflow: visible;
 }
 .player-row:last-child { border-bottom: none; }
 
@@ -224,15 +223,17 @@ body::before {
   padding-left: 10px;
   opacity: 0.5;
   flex-shrink: 0;
+  width: 28px;
+  min-width: 28px;
 }
 
 .player-inner {
+  flex: 1;
   padding: 11px 12px 11px 8px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  min-width: 0;
-  overflow: visible;
+  min-width: 0; /* potrzebne żeby flex child mógł się zawijać */
 }
 
 .pname {
@@ -259,15 +260,13 @@ body::before {
   text-transform: uppercase;
   padding: 3px 8px;
   border: 1px solid;
-  cursor: pointer;
-  transition: all .15s;
-  user-select: none;
   white-space: nowrap;
   border-radius: 2px;
-  -webkit-tap-highlight-color: transparent;
+  /* tylko wyświetlanie — brak interakcji */
+  user-select: none;
+  pointer-events: none;
 }
 
-/* Active tag styles only — nieaktywne są ukryte */
 .tag-green  { border-color: var(--green);  color: var(--green);  background: var(--green-lt); }
 .tag-orange { border-color: var(--orange); color: var(--orange); background: var(--orange-lt); }
 .tag-blue1  { border-color: var(--blue);   color: var(--blue); }
@@ -282,7 +281,7 @@ body::before {
   word-break: break-word;
 }
 
-/* Row actions — zawsze widoczne */
+/* Row actions */
 .row-actions {
   display: flex;
   align-items: flex-start;
@@ -699,22 +698,22 @@ function mkCard(day) {
         nameEl.textContent = name;
         inner.appendChild(nameEl);
 
-        // Tagi — pokazuj tylko aktywne, każdy klikalny żeby wyłączyć
+        // Tagi — tylko do wyświetlania, NIE klikalne, NIE usuwają się
         const tags = document.createElement('div');
         tags.className = 'tags-row';
 
-        const addTag = (label, cls, onClick) => {
+        const addTag = (label, cls) => {
           const t = document.createElement('span');
           t.className = 'tag ' + cls;
           t.textContent = label;
-          t.addEventListener('click', onClick);
+          // Celowo brak addEventListener — tagi są read-only
           tags.appendChild(t);
         };
 
-        if (ex.avail === 'green')  addTag('● Pewny',   'tag-green',  () => { setEx(day.key, i, { avail: null });  render(); });
-        if (ex.avail === 'orange') addTag('◐ Może',    'tag-orange', () => { setEx(day.key, i, { avail: null });  render(); });
-        if (ex.multi === '1x')     addTag('1× Multi',  'tag-blue1',  () => { setEx(day.key, i, { multi: null });  render(); });
-        if (ex.multi === '2x')     addTag('2× Multi',  'tag-blue2',  () => { setEx(day.key, i, { multi: null });  render(); });
+        if (ex.avail === 'green')  addTag('● Pewny',   'tag-green');
+        if (ex.avail === 'orange') addTag('◐ Może',    'tag-orange');
+        if (ex.multi === '1x')     addTag('1× Multi',  'tag-blue1');
+        if (ex.multi === '2x')     addTag('2× Multi',  'tag-blue2');
 
         if (tags.children.length > 0) inner.appendChild(tags);
 
