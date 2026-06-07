@@ -14,7 +14,6 @@
   --bg2:        #111114;
   --bg3:        #18181c;
   --surface:    #1c1c21;
-  --surface2:   #222228;
   --border:     rgba(255,255,255,0.07);
   --border2:    rgba(255,255,255,0.12);
   --text:       #f0f0f5;
@@ -43,7 +42,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Subtle top gradient */
 body::before {
   content: '';
   position: fixed;
@@ -62,8 +60,7 @@ body::before {
   max-width: 1000px;
   margin: 0 auto;
 }
-
-@media (max-width: 600px) { .site-header { padding: 36px 20px 0; } }
+@media (max-width: 600px) { .site-header { padding: 32px 16px 0; } }
 
 .brand-row {
   display: flex;
@@ -80,10 +77,7 @@ body::before {
   line-height: 0.92;
   color: var(--text);
 }
-
-.brand-name span {
-  color: var(--gold);
-}
+.brand-name span { color: var(--gold); }
 
 .brand-tag {
   font-size: 12px;
@@ -103,23 +97,18 @@ body::before {
   font-weight: 500;
 }
 
-/* Divider */
-.h-rule {
-  height: 1px;
-  background: linear-gradient(90deg, var(--gold) 0%, rgba(201,168,76,0.15) 40%, transparent 70%);
-  margin: 32px 0;
+.gold-rule {
   max-width: 1000px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 28px auto;
   padding: 0 40px;
 }
-.h-rule-inner {
+@media (max-width: 600px) { .gold-rule { padding: 0 16px; } }
+.gold-rule-inner {
   height: 1px;
   background: linear-gradient(90deg, var(--gold) 0%, rgba(201,168,76,0.15) 40%, transparent 70%);
 }
-@media (max-width: 600px) { .h-rule { padding: 0 20px; } }
 
-/* ── MAIN CONTENT ── */
+/* ── MAIN ── */
 .main {
   max-width: 1000px;
   margin: 0 auto;
@@ -127,7 +116,7 @@ body::before {
   position: relative;
   z-index: 1;
 }
-@media (max-width: 600px) { .main { padding: 0 20px; } }
+@media (max-width: 600px) { .main { padding: 0 16px; } }
 
 /* ── GRID ── */
 .grid {
@@ -144,45 +133,43 @@ body::before {
   border-radius: 2px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  transition: border-color .2s;
+  /* WAŻNE: bez overflow:hidden żeby tagi były widoczne */
   position: relative;
+  transition: border-color .2s;
 }
 .card:hover { border-color: var(--border2); }
 
-/* Top accent line */
 .card::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 1px;
   background: linear-gradient(90deg, var(--day-color, var(--gold)) 0%, transparent 60%);
+  z-index: 1;
 }
 
 /* ── CARD HEAD ── */
 .card-head {
-  padding: 24px 24px 20px;
+  padding: 22px 20px 18px;
   border-bottom: 1px solid var(--border);
 }
+@media (max-width: 400px) { .card-head { padding: 16px 14px 14px; } }
 
 .day-name {
   font-family: 'Syne', sans-serif;
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 800;
   letter-spacing: -0.5px;
   color: var(--text);
   line-height: 1;
 }
-
-.day-name em {
-  color: var(--day-color, var(--gold));
-  font-style: normal;
-}
+.day-name em { color: var(--day-color, var(--gold)); font-style: normal; }
 
 .card-meta-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-top: 8px;
 }
 
@@ -194,7 +181,7 @@ body::before {
 }
 
 .day-time {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--day-color, var(--gold));
   background: var(--gold-lt);
@@ -215,24 +202,17 @@ body::before {
 
 .player-row {
   display: grid;
-  grid-template-columns: 32px 1fr auto;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
   align-items: start;
-  gap: 0;
   border-bottom: 1px solid var(--border);
   animation: slideIn .18s ease;
+  overflow: visible;
 }
 .player-row:last-child { border-bottom: none; }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(-6px); }
+  from { opacity: 0; transform: translateY(-4px); }
   to   { opacity: 1; transform: none; }
-}
-
-.player-inner {
-  padding: 12px 20px 12px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
 }
 
 .num {
@@ -240,9 +220,19 @@ body::before {
   font-weight: 600;
   color: var(--text3);
   text-align: right;
-  padding-top: 13px;
-  padding-left: 20px;
+  padding-top: 14px;
+  padding-left: 10px;
   opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.player-inner {
+  padding: 11px 12px 11px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  overflow: visible;
 }
 
 .pname {
@@ -250,11 +240,11 @@ body::before {
   font-weight: 500;
   color: var(--text);
   line-height: 1.3;
+  word-break: break-word;
 }
+.pname.dim { opacity: 0.4; }
 
-.pname.rezerwa-player { opacity: 0.4; }
-
-/* Tags row */
+/* Tags */
 .tags-row {
   display: flex;
   flex-wrap: wrap;
@@ -265,24 +255,23 @@ body::before {
 .tag {
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
-  padding: 2px 8px;
+  padding: 3px 8px;
   border: 1px solid;
   cursor: pointer;
   transition: all .15s;
   user-select: none;
   white-space: nowrap;
   border-radius: 2px;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.tag-avail-green  { border-color: rgba(45,202,114,0.3); color: rgba(45,202,114,0.5); }
-.tag-avail-green.on  { border-color: var(--green); color: var(--green); background: var(--green-lt); }
-.tag-avail-orange { border-color: rgba(245,148,58,0.3); color: rgba(245,148,58,0.5); }
-.tag-avail-orange.on { border-color: var(--orange); color: var(--orange); background: var(--orange-lt); }
-.tag-multi        { border-color: rgba(91,142,240,0.3); color: rgba(91,142,240,0.5); }
-.tag-multi.on-1x  { border-color: var(--blue); color: var(--blue); }
-.tag-multi.on-2x  { border-color: var(--blue); color: #fff; background: var(--blue); }
+/* Active tag styles only — nieaktywne są ukryte */
+.tag-green  { border-color: var(--green);  color: var(--green);  background: var(--green-lt); }
+.tag-orange { border-color: var(--orange); color: var(--orange); background: var(--orange-lt); }
+.tag-blue1  { border-color: var(--blue);   color: var(--blue); }
+.tag-blue2  { border-color: var(--blue);   color: #fff; background: var(--blue); }
 
 /* Note */
 .note-line {
@@ -290,46 +279,44 @@ body::before {
   color: var(--text3);
   font-style: italic;
   line-height: 1.4;
-  padding-left: 1px;
+  word-break: break-word;
 }
 
-/* Row actions */
+/* Row actions — zawsze widoczne */
 .row-actions {
   display: flex;
   align-items: flex-start;
-  padding-top: 10px;
-  padding-right: 16px;
+  padding: 10px 12px 0 4px;
   gap: 4px;
-  opacity: 0;
-  transition: opacity .15s;
+  flex-shrink: 0;
 }
-.player-row:hover .row-actions { opacity: 1; }
 
 .act-btn {
   background: transparent;
   border: 1px solid var(--border2);
   color: var(--text3);
-  width: 22px; height: 22px;
-  font-size: 10px;
+  width: 26px; height: 26px;
+  font-size: 11px;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   border-radius: 2px;
   transition: all .15s;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
 }
-.act-btn:hover.edit { border-color: var(--gold); color: var(--gold); }
-.act-btn:hover.del  { border-color: var(--red);  color: var(--red); }
-.act-btn:hover.ok   { border-color: var(--green); color: var(--green); }
+.act-btn.edit:hover, .act-btn.edit:active { border-color: var(--gold); color: var(--gold); }
+.act-btn.del:hover,  .act-btn.del:active  { border-color: var(--red);  color: var(--red); }
+.act-btn.ok:hover,   .act-btn.ok:active   { border-color: var(--green); color: var(--green); }
 
-/* Status messages */
-.msg-empty, .msg-loading, .msg-closed {
-  padding: 28px 24px;
+/* Status */
+.msg-empty, .msg-loading {
+  padding: 28px 20px;
   font-size: 12px;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--text3);
   font-weight: 500;
 }
-.msg-closed { color: var(--red); }
 
 /* Spinner */
 .spinner {
@@ -347,7 +334,7 @@ body::before {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 24px;
+  padding: 8px 20px;
   font-size: 9px;
   letter-spacing: 3px;
   text-transform: uppercase;
@@ -362,11 +349,9 @@ body::before {
   border-top: 1px solid var(--border);
   background: var(--bg3);
 }
-.add-section.closed { opacity: 0.3; pointer-events: none; }
 
 .add-name-row {
   display: flex;
-  gap: 0;
 }
 
 .add-input {
@@ -378,36 +363,38 @@ body::before {
   font-family: 'Outfit', sans-serif;
   font-size: 14px;
   font-weight: 400;
-  padding: 14px 18px;
+  padding: 13px 16px;
   outline: none;
   transition: background .15s;
+  min-width: 0;
 }
 .add-input::placeholder { color: var(--text3); }
 .add-input:focus { background: var(--surface); }
-.add-input.err { background: rgba(224,85,85,0.05); }
 
 .add-btn {
   background: var(--gold);
   color: var(--bg);
   border: none;
-  padding: 0 20px;
+  padding: 0 18px;
   font-family: 'Syne', sans-serif;
   font-size: 22px;
   font-weight: 800;
   cursor: pointer;
-  transition: all .15s;
-  min-width: 52px;
+  transition: background .15s;
+  min-width: 48px;
   display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
 }
-.add-btn:hover { background: #d9b85c; }
+.add-btn:hover, .add-btn:active { background: #d9b85c; }
 .add-btn:disabled { opacity: 0.3; cursor: default; }
 
-/* Options row */
+/* Options */
 .add-opts-row {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 10px 18px 12px;
+  padding: 10px 16px 12px;
   border-top: 1px solid var(--border);
   align-items: center;
 }
@@ -415,7 +402,7 @@ body::before {
 .opt-tag {
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
   padding: 4px 10px;
   border: 1px solid var(--border2);
@@ -424,23 +411,24 @@ body::before {
   border-radius: 2px;
   transition: all .15s;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
-.opt-tag:hover { border-color: var(--text3); color: var(--text2); }
+.opt-tag:hover, .opt-tag:active { border-color: var(--text3); color: var(--text2); }
 .opt-tag.sel-green  { border-color: var(--green);  color: var(--green);  background: var(--green-lt); }
 .opt-tag.sel-orange { border-color: var(--orange); color: var(--orange); background: var(--orange-lt); }
 .opt-tag.sel-1x     { border-color: var(--blue);   color: var(--blue); }
-.opt-tag.sel-2x     { border-color: var(--blue);   color: #fff;        background: var(--blue); }
+.opt-tag.sel-2x     { border-color: var(--blue);   color: #fff; background: var(--blue); }
 
 .note-input {
   flex: 1;
-  min-width: 120px;
+  min-width: 100px;
   background: transparent;
   border: 1px solid var(--border);
   color: var(--text2);
   font-family: 'Outfit', sans-serif;
   font-size: 12px;
   font-style: italic;
-  padding: 4px 10px;
+  padding: 5px 10px;
   border-radius: 2px;
   outline: none;
   transition: border-color .15s;
@@ -448,17 +436,7 @@ body::before {
 .note-input::placeholder { color: var(--text3); }
 .note-input:focus { border-color: var(--border2); }
 
-/* Error */
-.add-error {
-  padding: 10px 18px;
-  font-size: 11px;
-  letter-spacing: 0.5px;
-  color: var(--red);
-  background: rgba(224,85,85,0.06);
-  border-top: 1px solid rgba(224,85,85,0.15);
-}
-
-/* Edit inline */
+/* Edit input */
 .edit-input {
   background: var(--surface);
   border: 1px solid var(--gold-mid);
@@ -468,17 +446,25 @@ body::before {
   font-weight: 500;
   padding: 4px 10px;
   outline: none;
-  flex: 1;
+  width: 100%;
+}
+
+/* Error */
+.add-error {
+  padding: 9px 16px;
+  font-size: 11px;
+  color: var(--red);
+  background: rgba(224,85,85,0.06);
+  border-top: 1px solid rgba(224,85,85,0.15);
+  letter-spacing: 0.3px;
 }
 
 /* ── FOOTER ── */
 .site-footer {
   text-align: center;
-  padding-top: 60px;
+  padding: 60px 16px 0;
   max-width: 1000px;
   margin: 0 auto;
-  padding-left: 40px;
-  padding-right: 40px;
   position: relative;
   z-index: 1;
 }
@@ -489,7 +475,6 @@ body::before {
   line-height: 1.9;
   text-transform: uppercase;
 }
-@media (max-width: 600px) { .site-footer { padding-left: 20px; padding-right: 20px; } }
 </style>
 </head>
 <body>
@@ -499,7 +484,6 @@ body::before {
   const CUTOFF_HOUR = 19;
 </script>
 
-<!-- HEADER -->
 <header class="site-header">
   <div class="brand-row">
     <div class="brand-name"><span>AERO</span></div>
@@ -508,9 +492,7 @@ body::before {
   <div class="brand-sub">Zapisy</div>
 </header>
 
-<div style="max-width:1000px;margin:0 auto;padding:0 40px">
-  <div style="height:1px;background:linear-gradient(90deg,var(--gold) 0%,rgba(201,168,76,0.15) 40%,transparent 70%);margin:28px 0"></div>
-</div>
+<div class="gold-rule"><div class="gold-rule-inner"></div></div>
 
 <main class="main">
   <div class="grid" id="grid"></div>
@@ -522,40 +504,40 @@ body::before {
 
 <script>
 const DAYS = [
-  { key:"tue", label:"Wtorek",  dow:2, time:"20:00", color:"#c9a84c" },
-  { key:"fri", label:"Piątek",  dow:5, time:"20:00", color:"#5b8ef0" },
+  { key:'tue', label:'Wtorek', dow:2, time:'20:00', color:'#c9a84c' },
+  { key:'fri', label:'Piątek', dow:5, time:'20:00', color:'#5b8ef0' },
 ];
-const REZERWA = "REZERWA";
+const REZERWA = 'REZERWA';
 
-// ── Extra data (local only) ──────────────────────────
+// ── Extra data (localStorage) ────────────────────────
 let extra = {};
-try { const s = localStorage.getItem('aero_extra'); if(s) extra = JSON.parse(s); } catch(e){}
-function saveExtra() { try { localStorage.setItem('aero_extra', JSON.stringify(extra)); } catch(e){} }
+try { const s = localStorage.getItem('aero_extra'); if (s) extra = JSON.parse(s); } catch(e) {}
+function saveExtra() { try { localStorage.setItem('aero_extra', JSON.stringify(extra)); } catch(e) {} }
 function getEx(dk, i) { return extra[dk+':'+i] || { avail:null, multi:null, note:'' }; }
-function setEx(dk, i, patch) { extra[dk+':'+i] = {...getEx(dk,i), ...patch}; saveExtra(); }
+function setEx(dk, i, patch) { extra[dk+':'+i] = { ...getEx(dk,i), ...patch }; saveExtra(); }
 
 // ── Date helpers ─────────────────────────────────────
 function getNextDate(dow) {
   const now = new Date();
   const cur = now.getDay();
-  const h   = parseInt(new Date().toLocaleString('pl-PL',{hour:'2-digit',hour12:false,timeZone:'Europe/Warsaw'}));
+  const h   = parseInt(new Date().toLocaleString('pl-PL', { hour:'2-digit', hour12:false, timeZone:'Europe/Warsaw' }));
   let diff  = (dow - cur + 7) % 7;
   if (diff === 0 && h >= CUTOFF_HOUR) diff = 7;
   const d = new Date(now);
   d.setDate(d.getDate() + diff);
-  d.setHours(0,0,0,0);
+  d.setHours(0, 0, 0, 0);
   return d;
 }
 function dateKey(d) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 function formatDate(d) {
-  return d.toLocaleDateString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric'});
+  return d.toLocaleDateString('pl-PL', { day:'2-digit', month:'2-digit', year:'numeric' });
 }
 
 // ── State ─────────────────────────────────────────────
 const state = {
-  days:    DAYS.map(d => ({...d, date: getNextDate(d.dow)})),
+  days:    DAYS.map(d => ({ ...d, date: getNextDate(d.dow) })),
   lists:   {},
   loading: {},
   saving:  {},
@@ -563,21 +545,20 @@ const state = {
   errors:  {},
   editing: null,
   editVal: '',
-  // form options
-  fAvail: {},
-  fMulti: {},
-  fNote:  {},
+  fAvail:  {},
+  fMulti:  {},
+  fNote:   {},
 };
 
-// ── API ───────────────────────────────────────────────
+// ── API (JSONP) ───────────────────────────────────────
 function api(params) {
   return new Promise((res, rej) => {
     const cb = 'cb_' + Math.random().toString(36).slice(2);
     let el;
-    const t = setTimeout(() => { delete window[cb]; el&&el.remove(); rej(new Error('timeout')); }, 10000);
-    window[cb] = data => { clearTimeout(t); delete window[cb]; el&&el.remove(); res(data); };
+    const t = setTimeout(() => { delete window[cb]; el && el.remove(); rej(new Error('timeout')); }, 10000);
+    window[cb] = data => { clearTimeout(t); delete window[cb]; el && el.remove(); res(data); };
     el = document.createElement('script');
-    el.src = APPS_SCRIPT_URL + '?' + new URLSearchParams({...params, callback:cb});
+    el.src = APPS_SCRIPT_URL + '?' + new URLSearchParams({ ...params, callback: cb });
     el.onerror = () => { clearTimeout(t); delete window[cb]; rej(new Error('err')); };
     document.head.appendChild(el);
   });
@@ -587,26 +568,28 @@ function api(params) {
 async function loadDay(day) {
   state.loading[day.key] = true; render();
   try {
-    const r = await api({action:'list', dayKey:day.key, dateStr:dateKey(day.date)});
-    if (r.ok) { state.lists[day.key] = r.players; }
+    const r = await api({ action:'list', dayKey:day.key, dateStr:dateKey(day.date) });
+    if (r.ok) state.lists[day.key] = r.players;
   } catch(e) {}
   state.loading[day.key] = false; render();
 }
 
 async function addPlayer(dk) {
   const day  = state.days.find(d => d.key === dk);
-  const name = (state.inputs[dk]||'').trim();
+  const name = (state.inputs[dk] || '').trim();
   if (!name) return;
   state.saving[dk] = true; state.errors[dk] = null; render();
   try {
-    const r = await api({action:'add', dayKey:dk, dateStr:dateKey(day.date), name});
+    const r = await api({ action:'add', dayKey:dk, dateStr:dateKey(day.date), name });
     if (r.ok) {
       const idx = r.players.indexOf(name);
-      const av = state.fAvail[dk]; const mu = state.fMulti[dk]; const no = (state.fNote[dk]||'').trim();
-      if ((av||mu||no) && idx>=0) setEx(dk, idx, {avail:av||null, multi:mu||null, note:no});
+      const av = state.fAvail[dk], mu = state.fMulti[dk], no = (state.fNote[dk] || '').trim();
+      if ((av || mu || no) && idx >= 0) setEx(dk, idx, { avail:av||null, multi:mu||null, note:no });
       state.lists[dk] = r.players;
       state.inputs[dk] = ''; state.fAvail[dk] = null; state.fMulti[dk] = null; state.fNote[dk] = '';
-    } else { state.errors[dk] = r.error; }
+    } else {
+      state.errors[dk] = r.error;
+    }
   } catch(e) { state.errors[dk] = 'Błąd połączenia'; }
   state.saving[dk] = false; render();
 }
@@ -614,25 +597,25 @@ async function addPlayer(dk) {
 async function removePlayer(dk, idx) {
   const day = state.days.find(d => d.key === dk);
   try {
-    const r = await api({action:'remove', dayKey:dk, dateStr:dateKey(day.date), idx, password:'__public__'});
+    const r = await api({ action:'remove', dayKey:dk, dateStr:dateKey(day.date), idx, password:'__public__' });
     if (r.ok) { state.lists[dk] = r.players; render(); }
-  } catch(e){}
+  } catch(e) {}
 }
 
 async function saveEdit(dk) {
   if (!state.editing) return;
   const day = state.days.find(d => d.key === dk);
   try {
-    const r = await api({action:'edit', dayKey:dk, dateStr:dateKey(day.date), idx:state.editing.idx, newName:state.editVal, password:'__public__'});
+    const r = await api({ action:'edit', dayKey:dk, dateStr:dateKey(day.date), idx:state.editing.idx, newName:state.editVal, password:'__public__' });
     if (r.ok) { state.lists[dk] = r.players; state.editing = null; render(); }
-  } catch(e){}
+  } catch(e) {}
 }
 
 // ── Render ────────────────────────────────────────────
 function render() {
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
-  for (const day of [...state.days].sort((a,b) => a.date - b.date)) {
+  for (const day of [...state.days].sort((a, b) => a.date - b.date)) {
     grid.appendChild(mkCard(day));
   }
 }
@@ -648,7 +631,7 @@ function mkCard(day) {
   card.className = 'card';
   card.style.setProperty('--day-color', day.color);
 
-  // ── Head ──
+  // Head
   const head = document.createElement('div');
   head.className = 'card-head';
   head.innerHTML = `
@@ -660,7 +643,7 @@ function mkCard(day) {
     </div>`;
   card.appendChild(head);
 
-  // ── List ──
+  // List
   const list = document.createElement('div');
   list.className = 'player-list';
 
@@ -670,6 +653,8 @@ function mkCard(day) {
     list.innerHTML = `<div class="msg-empty">Brak zapisów</div>`;
   } else {
     players.forEach((name, i) => {
+
+      // Separator rezerwy
       if (name === REZERWA) {
         const sep = document.createElement('div');
         sep.className = 'rezerwa-sep';
@@ -686,7 +671,7 @@ function mkCard(day) {
       const row = document.createElement('div');
       row.className = 'player-row';
 
-      // Num
+      // Numer
       const numEl = document.createElement('div');
       numEl.className = 'num';
       numEl.textContent = isAfterR ? '—' : visNum;
@@ -697,8 +682,6 @@ function mkCard(day) {
       inner.className = 'player-inner';
 
       if (isEdit) {
-        const wrap = document.createElement('div');
-        wrap.style.display = 'flex'; wrap.style.gap = '6px';
         const ei = document.createElement('input');
         ei.className = 'edit-input';
         ei.value = state.editVal;
@@ -707,41 +690,35 @@ function mkCard(day) {
           if (e.key === 'Enter')  saveEdit(day.key);
           if (e.key === 'Escape') { state.editing = null; render(); }
         });
-        wrap.appendChild(ei);
-        inner.appendChild(wrap);
+        inner.appendChild(ei);
         setTimeout(() => ei.focus(), 0);
       } else {
+        // Imię
         const nameEl = document.createElement('div');
-        nameEl.className = 'pname' + (isAfterR ? ' rezerwa-player' : '');
+        nameEl.className = 'pname' + (isAfterR ? ' dim' : '');
         nameEl.textContent = name;
         inner.appendChild(nameEl);
 
-        // Tags
+        // Tagi — pokazuj tylko aktywne, każdy klikalny żeby wyłączyć
         const tags = document.createElement('div');
         tags.className = 'tags-row';
 
-        const tg = (label, cls, onClick) => {
+        const addTag = (label, cls, onClick) => {
           const t = document.createElement('span');
           t.className = 'tag ' + cls;
           t.textContent = label;
           t.addEventListener('click', onClick);
-          return t;
+          tags.appendChild(t);
         };
 
-        const tagDefs = [
-  { label:'● Pewny',   cls:'tag-avail-green',  active: ex.avail==='green',  onClick: () => { setEx(day.key, i, {avail: ex.avail==='green'  ? null : 'green'});  render(); }},
-  { label:'◐ Może',    cls:'tag-avail-orange', active: ex.avail==='orange', onClick: () => { setEx(day.key, i, {avail: ex.avail==='orange' ? null : 'orange'}); render(); }},
-  { label:'1× Multi',  cls:'tag-multi',        active: ex.multi==='1x',     onClick: () => { setEx(day.key, i, {multi: ex.multi==='1x' ? null : '1x'}); render(); }, activeCls:'on-1x' },
-  { label:'2× Multi',  cls:'tag-multi',        active: ex.multi==='2x',     onClick: () => { setEx(day.key, i, {multi: ex.multi==='2x' ? null : '2x'}); render(); }, activeCls:'on-2x' },
-];
-tagDefs.forEach(td => {
-  if (!td.active) return; // ukryj nieaktywne
-  const finalCls = td.cls + ' on' + (td.activeCls ? ' ' + td.activeCls : '');
-  tags.appendChild(tg(td.label, finalCls, td.onClick));
-});
-if (tags.children.length === 0) tags.style.display = 'none';
-        inner.appendChild(tags);
+        if (ex.avail === 'green')  addTag('● Pewny',   'tag-green',  () => { setEx(day.key, i, { avail: null });  render(); });
+        if (ex.avail === 'orange') addTag('◐ Może',    'tag-orange', () => { setEx(day.key, i, { avail: null });  render(); });
+        if (ex.multi === '1x')     addTag('1× Multi',  'tag-blue1',  () => { setEx(day.key, i, { multi: null });  render(); });
+        if (ex.multi === '2x')     addTag('2× Multi',  'tag-blue2',  () => { setEx(day.key, i, { multi: null });  render(); });
 
+        if (tags.children.length > 0) inner.appendChild(tags);
+
+        // Uwaga
         if (ex.note) {
           const nl = document.createElement('div');
           nl.className = 'note-line';
@@ -749,37 +726,50 @@ if (tags.children.length === 0) tags.style.display = 'none';
           inner.appendChild(nl);
         }
       }
+
       row.appendChild(inner);
 
-      // Actions (zawsze widoczne po hover, edycja dla każdego)
+      // Przyciski akcji — zawsze widoczne
       const actions = document.createElement('div');
       actions.className = 'row-actions';
 
       if (isEdit) {
         const ok = document.createElement('button');
-        ok.className = 'act-btn ok'; ok.textContent = '✓';
+        ok.className = 'act-btn ok';
+        ok.textContent = '✓';
+        ok.title = 'Zapisz';
         ok.addEventListener('click', () => saveEdit(day.key));
         actions.appendChild(ok);
       } else {
         const ed = document.createElement('button');
-        ed.className = 'act-btn edit'; ed.textContent = '✎'; ed.title = 'Edytuj imię';
-        ed.addEventListener('click', () => { state.editing = {dk: day.key, idx: i}; state.editVal = name; render(); });
-        actions.appendChild(ed);
+        ed.className = 'act-btn edit';
+        ed.textContent = '✎';
+        ed.title = 'Edytuj';
+        ed.addEventListener('click', () => {
+          state.editing = { dk: day.key, idx: i };
+          state.editVal = name;
+          render();
+        });
 
         const dl = document.createElement('button');
-        dl.className = 'act-btn del'; dl.textContent = '✕'; dl.title = 'Usuń';
+        dl.className = 'act-btn del';
+        dl.textContent = '✕';
+        dl.title = 'Usuń';
         dl.addEventListener('click', () => {
           if (confirm(`Usunąć "${name}" z listy?`)) removePlayer(day.key, i);
         });
+
+        actions.appendChild(ed);
         actions.appendChild(dl);
       }
+
       row.appendChild(actions);
       list.appendChild(row);
     });
   }
   card.appendChild(list);
 
-  // ── Add section ──
+  // Add section
   const addSec = document.createElement('div');
   addSec.className = 'add-section';
 
@@ -787,7 +777,7 @@ if (tags.children.length === 0) tags.style.display = 'none';
   nameRow.className = 'add-name-row';
 
   const inp = document.createElement('input');
-  inp.className = 'add-input' + (err ? ' err' : '');
+  inp.className = 'add-input';
   inp.type = 'text';
   inp.placeholder = 'Imię i nazwisko…';
   inp.value = state.inputs[day.key] || '';
@@ -807,25 +797,25 @@ if (tags.children.length === 0) tags.style.display = 'none';
   nameRow.appendChild(addB);
   addSec.appendChild(nameRow);
 
-  // Options
+  // Opcje formularza
   const opts = document.createElement('div');
   opts.className = 'add-opts-row';
 
   const ca = state.fAvail[day.key];
   const cm = state.fMulti[day.key];
 
-  const op = (label, cls, onClick) => {
+  const mkOpt = (label, activeCls, isActive, onClick) => {
     const s = document.createElement('span');
-    s.className = 'opt-tag ' + cls;
+    s.className = 'opt-tag' + (isActive ? ' ' + activeCls : '');
     s.textContent = label;
     s.addEventListener('click', onClick);
     return s;
   };
 
-  opts.appendChild(op('● Pewny',   ca==='green'  ? 'sel-green'  : '', () => { state.fAvail[day.key] = ca==='green'  ? null : 'green';  render(); }));
-  opts.appendChild(op('◐ Może',    ca==='orange' ? 'sel-orange' : '', () => { state.fAvail[day.key] = ca==='orange' ? null : 'orange'; render(); }));
-  opts.appendChild(op('1× Multi',  cm==='1x'     ? 'sel-1x'     : '', () => { state.fMulti[day.key] = cm==='1x'     ? null : '1x';     render(); }));
-  opts.appendChild(op('2× Multi',  cm==='2x'     ? 'sel-2x'     : '', () => { state.fMulti[day.key] = cm==='2x'     ? null : '2x';     render(); }));
+  opts.appendChild(mkOpt('● Pewny',  'sel-green',  ca === 'green',  () => { state.fAvail[day.key] = ca === 'green'  ? null : 'green';  render(); }));
+  opts.appendChild(mkOpt('◐ Może',   'sel-orange', ca === 'orange', () => { state.fAvail[day.key] = ca === 'orange' ? null : 'orange'; render(); }));
+  opts.appendChild(mkOpt('1× Multi', 'sel-1x',     cm === '1x',     () => { state.fMulti[day.key] = cm === '1x'     ? null : '1x';     render(); }));
+  opts.appendChild(mkOpt('2× Multi', 'sel-2x',     cm === '2x',     () => { state.fMulti[day.key] = cm === '2x'     ? null : '2x';     render(); }));
 
   const ni = document.createElement('input');
   ni.className = 'note-input';
@@ -837,11 +827,12 @@ if (tags.children.length === 0) tags.style.display = 'none';
 
   addSec.appendChild(opts);
 
+  // Błąd
   if (err) {
     const errDiv = document.createElement('div');
     errDiv.className = 'add-error';
     errDiv.textContent = err === 'NOT_ON_LIST'
-      ? '⚠ Nie znaleziono na liście graczy. Skontaktuj się z organizatorem.'
+      ? '⚠ Nie znaleziono na liście graczy.'
       : '⚠ ' + err;
     addSec.appendChild(errDiv);
   }
