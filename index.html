@@ -495,7 +495,7 @@ body::before {
 <body>
 
 <script>
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzGqs9164kVQtyZn6SDYg9zUcIzieglU4m_a6E0FxCarIPHXA2PD5YVU-FjX2Rz5y2xUw/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyO52ChqMJN72F6GM6g9EaW1vMZykTnySdFbjJgn6Csw2MIDXYjksLDOL7e11zHceD0UA/exec";
   const CUTOFF_HOUR = 19;
 </script>
 
@@ -728,10 +728,18 @@ function mkCard(day) {
           return t;
         };
 
-        tags.appendChild(tg('● Pewny', 'tag-avail-green'  + (ex.avail==='green'  ? ' on' : ''), () => { setEx(day.key, i, {avail: ex.avail==='green'  ? null : 'green'});  render(); }));
-        tags.appendChild(tg('◐ Może',  'tag-avail-orange' + (ex.avail==='orange' ? ' on' : ''), () => { setEx(day.key, i, {avail: ex.avail==='orange' ? null : 'orange'}); render(); }));
-        tags.appendChild(tg('1× Multi','tag-multi'        + (ex.multi==='1x' ? ' on-1x' : ''), () => { setEx(day.key, i, {multi: ex.multi==='1x' ? null : '1x'}); render(); }));
-        tags.appendChild(tg('2× Multi','tag-multi'        + (ex.multi==='2x' ? ' on-2x' : ''), () => { setEx(day.key, i, {multi: ex.multi==='2x' ? null : '2x'}); render(); }));
+        const tagDefs = [
+  { label:'● Pewny',   cls:'tag-avail-green',  active: ex.avail==='green',  onClick: () => { setEx(day.key, i, {avail: ex.avail==='green'  ? null : 'green'});  render(); }},
+  { label:'◐ Może',    cls:'tag-avail-orange', active: ex.avail==='orange', onClick: () => { setEx(day.key, i, {avail: ex.avail==='orange' ? null : 'orange'}); render(); }},
+  { label:'1× Multi',  cls:'tag-multi',        active: ex.multi==='1x',     onClick: () => { setEx(day.key, i, {multi: ex.multi==='1x' ? null : '1x'}); render(); }, activeCls:'on-1x' },
+  { label:'2× Multi',  cls:'tag-multi',        active: ex.multi==='2x',     onClick: () => { setEx(day.key, i, {multi: ex.multi==='2x' ? null : '2x'}); render(); }, activeCls:'on-2x' },
+];
+tagDefs.forEach(td => {
+  if (!td.active) return; // ukryj nieaktywne
+  const finalCls = td.cls + ' on' + (td.activeCls ? ' ' + td.activeCls : '');
+  tags.appendChild(tg(td.label, finalCls, td.onClick));
+});
+if (tags.children.length === 0) tags.style.display = 'none';
         inner.appendChild(tags);
 
         if (ex.note) {
