@@ -479,7 +479,7 @@ body::before {
 <body>
 
 <script>
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyjM509LrffIfy3SMTTE6Z9PntcgjqOYHCxGrQZS_qDxBzeUlexvpNX5fOVzSHA6ZcYLQ/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZL3jjDSiF5n_ZLXFGcy7XRuOAchRMZNfFD5-Xca5dmCS0haJ7Ay1LLHSWVxRq1ECQwA/exec";
   const CUTOFF_HOUR = 19;
 </script>
 
@@ -508,12 +508,11 @@ const DAYS = [
 ];
 const REZERWA = 'REZERWA';
 
-// ── Extra data (localStorage) ────────────────────────
-let extra = {};
-try { const s = localStorage.getItem('aero_extra'); if (s) extra = JSON.parse(s); } catch(e) {}
-function saveExtra() { try { localStorage.setItem('aero_extra', JSON.stringify(extra)); } catch(e) {} }
-function getEx(dk, i) { return extra[dk+':'+i] || { avail:null, multi:null, note:'' }; }
-function setEx(dk, i, patch) { extra[dk+':'+i] = { ...getEx(dk,i), ...patch }; saveExtra(); }
+// ── Extra data (tagi) — przechowywane po stronie serwera ─
+// state.extras[dk] = { "0": {avail,multi,note}, "1": {...}, ... }
+function getEx(dk, i) {
+  return (state.extras[dk] || {})[String(i)] || { avail: null, multi: null, note: '' };
+}
 
 // ── Date helpers ─────────────────────────────────────
 function getNextDate(dow) {
@@ -537,7 +536,8 @@ function formatDate(d) {
 // ── State ─────────────────────────────────────────────
 const state = {
   days:    DAYS.map(d => ({ ...d, date: getNextDate(d.dow) })),
-  lists:   {},
+  lists:   {},   // dk → string[]
+  extras:  {},   // dk → { "0": {avail,multi,note}, ... }
   loading: {},
   saving:  {},
   inputs:  {},
@@ -568,7 +568,10 @@ async function loadDay(day) {
   state.loading[day.key] = true; render();
   try {
     const r = await api({ action:'list', dayKey:day.key, dateStr:dateKey(day.date) });
-    if (r.ok) state.lists[day.key] = r.players;
+    if (r.ok) {
+      state.lists[day.key]  = r.players;
+      state.extras[day.key] = r.extra || {};
+    }
   } catch(e) {}
   state.loading[day.key] = false; render();
 }
@@ -577,14 +580,15 @@ async function addPlayer(dk) {
   const day  = state.days.find(d => d.key === dk);
   const name = (state.inputs[dk] || '').trim();
   if (!name) return;
+  const av = state.fAvail[dk] || '';
+  const mu = state.fMulti[dk] || '';
+  const no = (state.fNote[dk]  || '').trim();
   state.saving[dk] = true; state.errors[dk] = null; render();
   try {
-    const r = await api({ action:'add', dayKey:dk, dateStr:dateKey(day.date), name });
+    const r = await api({ action:'add', dayKey:dk, dateStr:dateKey(day.date), name, avail:av, multi:mu, note:no });
     if (r.ok) {
-      const idx = r.players.indexOf(name);
-      const av = state.fAvail[dk], mu = state.fMulti[dk], no = (state.fNote[dk] || '').trim();
-      if ((av || mu || no) && idx >= 0) setEx(dk, idx, { avail:av||null, multi:mu||null, note:no });
-      state.lists[dk] = r.players;
+      state.lists[dk]  = r.players;
+      state.extras[dk] = r.extra || {};
       state.inputs[dk] = ''; state.fAvail[dk] = null; state.fMulti[dk] = null; state.fNote[dk] = '';
     } else {
       state.errors[dk] = r.error;
@@ -597,7 +601,11 @@ async function removePlayer(dk, idx) {
   const day = state.days.find(d => d.key === dk);
   try {
     const r = await api({ action:'remove', dayKey:dk, dateStr:dateKey(day.date), idx, password:'__public__' });
-    if (r.ok) { state.lists[dk] = r.players; render(); }
+    if (r.ok) {
+      state.lists[dk]  = r.players;
+      state.extras[dk] = r.extra || {};
+      render();
+    }
   } catch(e) {}
 }
 
@@ -606,7 +614,11 @@ async function saveEdit(dk) {
   const day = state.days.find(d => d.key === dk);
   try {
     const r = await api({ action:'edit', dayKey:dk, dateStr:dateKey(day.date), idx:state.editing.idx, newName:state.editVal, password:'__public__' });
-    if (r.ok) { state.lists[dk] = r.players; state.editing = null; render(); }
+    if (r.ok) {
+      state.lists[dk]  = r.players;
+      state.extras[dk] = r.extra || {};
+      state.editing = null; render();
+    }
   } catch(e) {}
 }
 
