@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aero Squash — Zapisy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #0a0a0b;
+  --bg2:        #111114;
+  --bg3:        #18181c;
+  --surface:    #1c1c21;
+  --surface2:   #222228;
+  --border:     rgba(255,255,255,0.07);
+  --border2:    rgba(255,255,255,0.12);
+  --text:       #f0f0f5;
+  --text2:      #9898a8;
+  --text3:      #555565;
+  --gold:       #c9a84c;
+  --gold-lt:    rgba(201,168,76,0.12);
+  --gold-mid:   rgba(201,168,76,0.25);
+  --green:      #2dca72;
+  --green-lt:   rgba(45,202,114,0.1);
+  --orange:     #f5943a;
+  --orange-lt:  rgba(245,148,58,0.1);
+  --blue:       #5b8ef0;
+  --blue-lt:    rgba(91,142,240,0.1);
+  --red:        #e05555;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+  padding-bottom: 100px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle top gradient */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 400px;
+  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(201,168,76,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── HEADER ── */
+.site-header {
+  position: relative;
+  z-index: 10;
+  padding: 52px 40px 0;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+@media (max-width: 600px) { .site-header { padding: 36px 20px 0; } }
+
+.brand-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+  margin-bottom: 6px;
+}
+
+.brand-name {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(48px, 10vw, 88px);
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 0.92;
+  color: var(--text);
+}
+
+.brand-name span {
+  color: var(--gold);
+}
+
+.brand-tag {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding-bottom: 10px;
+}
+
+.brand-sub {
+  font-size: 14px;
+  color: var(--text3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 12px;
+  font-weight: 500;
+}
+
+/* Divider */
+.h-rule {
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold) 0%, rgba(201,168,76,0.15) 40%, transparent 70%);
+  margin: 32px 0;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 40px;
+}
+.h-rule-inner {
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold) 0%, rgba(201,168,76,0.15) 40%, transparent 70%);
+}
+@media (max-width: 600px) { .h-rule { padding: 0 20px; } }
+
+/* ── MAIN CONTENT ── */
+.main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 40px;
+  position: relative;
+  z-index: 1;
+}
+@media (max-width: 600px) { .main { padding: 0 20px; } }
+
+/* ── GRID ── */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 680px) { .grid { grid-template-columns: 1fr; } }
+
+/* ── CARD ── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: border-color .2s;
+  position: relative;
+}
+.card:hover { border-color: var(--border2); }
+
+/* Top accent line */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--day-color, var(--gold)) 0%, transparent 60%);
+}
+
+/* ── CARD HEAD ── */
+.card-head {
+  padding: 24px 24px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.day-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  line-height: 1;
+}
+
+.day-name em {
+  color: var(--day-color, var(--gold));
+  font-style: normal;
+}
+
+.card-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.day-date {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text3);
+  letter-spacing: 1px;
+}
+
+.day-time {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--day-color, var(--gold));
+  background: var(--gold-lt);
+  padding: 2px 8px;
+  letter-spacing: 1px;
+}
+
+.count-chip {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  letter-spacing: 1px;
+}
+
+/* ── PLAYER LIST ── */
+.player-list { flex: 1; }
+
+.player-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: start;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  animation: slideIn .18s ease;
+}
+.player-row:last-child { border-bottom: none; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.player-inner {
+  padding: 12px 20px 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.num {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  text-align: right;
+  padding-top: 13px;
+  padding-left: 20px;
+  opacity: 0.5;
+}
+
+.pname {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.pname.rezerwa-player { opacity: 0.4; }
+
+/* Tags row */
+.tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+}
+
+.tag {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all .15s;
+  user-select: none;
+  white-space: nowrap;
+  border-radius: 2px;
+}
+
+.tag-avail-green  { border-color: rgba(45,202,114,0.3); color: rgba(45,202,114,0.5); }
+.tag-avail-green.on  { border-color: var(--green); color: var(--green); background: var(--green-lt); }
+.tag-avail-orange { border-color: rgba(245,148,58,0.3); color: rgba(245,148,58,0.5); }
+.tag-avail-orange.on { border-color: var(--orange); color: var(--orange); background: var(--orange-lt); }
+.tag-multi        { border-color: rgba(91,142,240,0.3); color: rgba(91,142,240,0.5); }
+.tag-multi.on-1x  { border-color: var(--blue); color: var(--blue); }
+.tag-multi.on-2x  { border-color: var(--blue); color: #fff; background: var(--blue); }
+
+/* Note */
+.note-line {
+  font-size: 12px;
+  color: var(--text3);
+  font-style: italic;
+  line-height: 1.4;
+  padding-left: 1px;
+}
+
+/* Row actions */
+.row-actions {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 10px;
+  padding-right: 16px;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity .15s;
+}
+.player-row:hover .row-actions { opacity: 1; }
+
+.act-btn {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  width: 22px; height: 22px;
+  font-size: 10px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 2px;
+  transition: all .15s;
+}
+.act-btn:hover.edit { border-color: var(--gold); color: var(--gold); }
+.act-btn:hover.del  { border-color: var(--red);  color: var(--red); }
+.act-btn:hover.ok   { border-color: var(--green); color: var(--green); }
+
+/* Status messages */
+.msg-empty, .msg-loading, .msg-closed {
+  padding: 28px 24px;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  font-weight: 500;
+}
+.msg-closed { color: var(--red); }
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 1.5px solid var(--border2);
+  border-top-color: var(--text3);
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* REZERWA */
+.rezerwa-sep {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 24px;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--orange);
+  background: var(--orange-lt);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+}
+
+/* ── ADD SECTION ── */
+.add-section {
+  border-top: 1px solid var(--border);
+  background: var(--bg3);
+}
+.add-section.closed { opacity: 0.3; pointer-events: none; }
+
+.add-name-row {
+  display: flex;
+  gap: 0;
+}
+
+.add-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 14px 18px;
+  outline: none;
+  transition: background .15s;
+}
+.add-input::placeholder { color: var(--text3); }
+.add-input:focus { background: var(--surface); }
+.add-input.err { background: rgba(224,85,85,0.05); }
+
+.add-btn {
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  padding: 0 20px;
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all .15s;
+  min-width: 52px;
+  display: flex; align-items: center; justify-content: center;
+}
+.add-btn:hover { background: #d9b85c; }
+.add-btn:disabled { opacity: 0.3; cursor: default; }
+
+/* Options row */
+.add-opts-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 18px 12px;
+  border-top: 1px solid var(--border);
+  align-items: center;
+}
+
+.opt-tag {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all .15s;
+  user-select: none;
+}
+.opt-tag:hover { border-color: var(--text3); color: var(--text2); }
+.opt-tag.sel-green  { border-color: var(--green);  color: var(--green);  background: var(--green-lt); }
+.opt-tag.sel-orange { border-color: var(--orange); color: var(--orange); background: var(--orange-lt); }
+.opt-tag.sel-1x     { border-color: var(--blue);   color: var(--blue); }
+.opt-tag.sel-2x     { border-color: var(--blue);   color: #fff;        background: var(--blue); }
+
+.note-input {
+  flex: 1;
+  min-width: 120px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-style: italic;
+  padding: 4px 10px;
+  border-radius: 2px;
+  outline: none;
+  transition: border-color .15s;
+}
+.note-input::placeholder { color: var(--text3); }
+.note-input:focus { border-color: var(--border2); }
+
+/* Error */
+.add-error {
+  padding: 10px 18px;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: var(--red);
+  background: rgba(224,85,85,0.06);
+  border-top: 1px solid rgba(224,85,85,0.15);
+}
+
+/* Edit inline */
+.edit-input {
+  background: var(--surface);
+  border: 1px solid var(--gold-mid);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 4px 10px;
+  outline: none;
+  flex: 1;
+}
+
+/* ── FOOTER ── */
+.site-footer {
+  text-align: center;
+  padding-top: 60px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding-left: 40px;
+  padding-right: 40px;
+  position: relative;
+  z-index: 1;
+}
+.site-footer p {
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 1px;
+  line-height: 1.9;
+  text-transform: uppercase;
+}
+@media (max-width: 600px) { .site-footer { padding-left: 20px; padding-right: 20px; } }
+</style>
+</head>
+<body>
+
+<script>
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGbiyNzfPJIUINDedgllhRVHOgm2eLS5MyYe34t6oj7-yCT0I8VzKqmzX2-DE6-8dC/exec";
+  const CUTOFF_HOUR = 19;
+</script>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="brand-row">
+    <div class="brand-name"><span>AERO</span></div>
+    <div class="brand-tag">Squash Liga</div>
+  </div>
+  <div class="brand-sub">Zapisy · Sezon 2025/26 · Warsaw Padel Club</div>
+</header>
+
+<div style="max-width:1000px;margin:0 auto;padding:0 40px">
+  <div style="height:1px;background:linear-gradient(90deg,var(--gold) 0%,rgba(201,168,76,0.15) 40%,transparent 70%);margin:28px 0"></div>
+</div>
+
+<main class="main">
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer class="site-footer">
+  <p>Administratorem danych jest Karol Kreczmański<br>Dane zbierane w celu organizacji ligi · Uczestnik może żądać usunięcia</p>
+</footer>
+
+<script>
+const DAYS = [
+  { key:"tue", label:"Wtorek",  dow:2, time:"20:00", color:"#c9a84c" },
+  { key:"fri", label:"Piątek",  dow:5, time:"20:00", color:"#5b8ef0" },
+];
+const REZERWA = "REZERWA";
+
+// ── Extra data (local only) ──────────────────────────
+let extra = {};
+try { const s = localStorage.getItem('aero_extra'); if(s) extra = JSON.parse(s); } catch(e){}
+function saveExtra() { try { localStorage.setItem('aero_extra', JSON.stringify(extra)); } catch(e){} }
+function getEx(dk, i) { return extra[dk+':'+i] || { avail:null, multi:null, note:'' }; }
+function setEx(dk, i, patch) { extra[dk+':'+i] = {...getEx(dk,i), ...patch}; saveExtra(); }
+
+// ── Date helpers ─────────────────────────────────────
+function getNextDate(dow) {
+  const now = new Date();
+  const cur = now.getDay();
+  const h   = parseInt(new Date().toLocaleString('pl-PL',{hour:'2-digit',hour12:false,timeZone:'Europe/Warsaw'}));
+  let diff  = (dow - cur + 7) % 7;
+  if (diff === 0 && h >= CUTOFF_HOUR) diff = 7;
+  const d = new Date(now);
+  d.setDate(d.getDate() + diff);
+  d.setHours(0,0,0,0);
+  return d;
+}
+function dateKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function formatDate(d) {
+  return d.toLocaleDateString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+
+// ── State ─────────────────────────────────────────────
+const state = {
+  days:    DAYS.map(d => ({...d, date: getNextDate(d.dow)})),
+  lists:   {},
+  loading: {},
+  saving:  {},
+  inputs:  {},
+  errors:  {},
+  editing: null,
+  editVal: '',
+  // form options
+  fAvail: {},
+  fMulti: {},
+  fNote:  {},
+};
+
+// ── API ───────────────────────────────────────────────
+function api(params) {
+  return new Promise((res, rej) => {
+    const cb = 'cb_' + Math.random().toString(36).slice(2);
+    let el;
+    const t = setTimeout(() => { delete window[cb]; el&&el.remove(); rej(new Error('timeout')); }, 10000);
+    window[cb] = data => { clearTimeout(t); delete window[cb]; el&&el.remove(); res(data); };
+    el = document.createElement('script');
+    el.src = APPS_SCRIPT_URL + '?' + new URLSearchParams({...params, callback:cb});
+    el.onerror = () => { clearTimeout(t); delete window[cb]; rej(new Error('err')); };
+    document.head.appendChild(el);
+  });
+}
+
+// ── Data ops ──────────────────────────────────────────
+async function loadDay(day) {
+  state.loading[day.key] = true; render();
+  try {
+    const r = await api({action:'list', dayKey:day.key, dateStr:dateKey(day.date)});
+    if (r.ok) { state.lists[day.key] = r.players; }
+  } catch(e) {}
+  state.loading[day.key] = false; render();
+}
+
+async function addPlayer(dk) {
+  const day  = state.days.find(d => d.key === dk);
+  const name = (state.inputs[dk]||'').trim();
+  if (!name) return;
+  state.saving[dk] = true; state.errors[dk] = null; render();
+  try {
+    const r = await api({action:'add', dayKey:dk, dateStr:dateKey(day.date), name});
+    if (r.ok) {
+      const idx = r.players.indexOf(name);
+      const av = state.fAvail[dk]; const mu = state.fMulti[dk]; const no = (state.fNote[dk]||'').trim();
+      if ((av||mu||no) && idx>=0) setEx(dk, idx, {avail:av||null, multi:mu||null, note:no});
+      state.lists[dk] = r.players;
+      state.inputs[dk] = ''; state.fAvail[dk] = null; state.fMulti[dk] = null; state.fNote[dk] = '';
+    } else { state.errors[dk] = r.error; }
+  } catch(e) { state.errors[dk] = 'Błąd połączenia'; }
+  state.saving[dk] = false; render();
+}
+
+async function removePlayer(dk, idx) {
+  const day = state.days.find(d => d.key === dk);
+  try {
+    const r = await api({action:'remove', dayKey:dk, dateStr:dateKey(day.date), idx, password:'__public__'});
+    if (r.ok) { state.lists[dk] = r.players; render(); }
+  } catch(e){}
+}
+
+async function saveEdit(dk) {
+  if (!state.editing) return;
+  const day = state.days.find(d => d.key === dk);
+  try {
+    const r = await api({action:'edit', dayKey:dk, dateStr:dateKey(day.date), idx:state.editing.idx, newName:state.editVal, password:'__public__'});
+    if (r.ok) { state.lists[dk] = r.players; state.editing = null; render(); }
+  } catch(e){}
+}
+
+// ── Render ────────────────────────────────────────────
+function render() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  for (const day of [...state.days].sort((a,b) => a.date - b.date)) {
+    grid.appendChild(mkCard(day));
+  }
+}
+
+function mkCard(day) {
+  const players = state.lists[day.key] || [];
+  const loading = state.loading[day.key];
+  const saving  = state.saving[day.key];
+  const err     = state.errors[day.key];
+  const nonR    = players.filter(p => p !== REZERWA);
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.style.setProperty('--day-color', day.color);
+
+  // ── Head ──
+  const head = document.createElement('div');
+  head.className = 'card-head';
+  head.innerHTML = `
+    <div class="day-name"><em>${day.label}</em></div>
+    <div class="card-meta-row">
+      <span class="day-date">${formatDate(day.date)}</span>
+      <span class="day-time">${day.time}</span>
+      ${nonR.length > 0 ? `<span class="count-chip">${nonR.length} graczy</span>` : ''}
+    </div>`;
+  card.appendChild(head);
+
+  // ── List ──
+  const list = document.createElement('div');
+  list.className = 'player-list';
+
+  if (loading) {
+    list.innerHTML = `<div class="msg-loading"><span class="spinner"></span></div>`;
+  } else if (players.length === 0) {
+    list.innerHTML = `<div class="msg-empty">Brak zapisów</div>`;
+  } else {
+    players.forEach((name, i) => {
+      if (name === REZERWA) {
+        const sep = document.createElement('div');
+        sep.className = 'rezerwa-sep';
+        sep.textContent = '▾  Rezerwa';
+        list.appendChild(sep);
+        return;
+      }
+
+      const isAfterR = players.slice(0, i).includes(REZERWA);
+      const visNum   = players.slice(0, i).filter(p => p !== REZERWA).length + 1;
+      const isEdit   = state.editing && state.editing.dk === day.key && state.editing.idx === i;
+      const ex       = getEx(day.key, i);
+
+      const row = document.createElement('div');
+      row.className = 'player-row';
+
+      // Num
+      const numEl = document.createElement('div');
+      numEl.className = 'num';
+      numEl.textContent = isAfterR ? '—' : visNum;
+      row.appendChild(numEl);
+
+      // Inner
+      const inner = document.createElement('div');
+      inner.className = 'player-inner';
+
+      if (isEdit) {
+        const wrap = document.createElement('div');
+        wrap.style.display = 'flex'; wrap.style.gap = '6px';
+        const ei = document.createElement('input');
+        ei.className = 'edit-input';
+        ei.value = state.editVal;
+        ei.addEventListener('input', e => state.editVal = e.target.value);
+        ei.addEventListener('keydown', e => {
+          if (e.key === 'Enter')  saveEdit(day.key);
+          if (e.key === 'Escape') { state.editing = null; render(); }
+        });
+        wrap.appendChild(ei);
+        inner.appendChild(wrap);
+        setTimeout(() => ei.focus(), 0);
+      } else {
+        const nameEl = document.createElement('div');
+        nameEl.className = 'pname' + (isAfterR ? ' rezerwa-player' : '');
+        nameEl.textContent = name;
+        inner.appendChild(nameEl);
+
+        // Tags
+        const tags = document.createElement('div');
+        tags.className = 'tags-row';
+
+        const tg = (label, cls, onClick) => {
+          const t = document.createElement('span');
+          t.className = 'tag ' + cls;
+          t.textContent = label;
+          t.addEventListener('click', onClick);
+          return t;
+        };
+
+        tags.appendChild(tg('● Pewny', 'tag-avail-green'  + (ex.avail==='green'  ? ' on' : ''), () => { setEx(day.key, i, {avail: ex.avail==='green'  ? null : 'green'});  render(); }));
+        tags.appendChild(tg('◐ Może',  'tag-avail-orange' + (ex.avail==='orange' ? ' on' : ''), () => { setEx(day.key, i, {avail: ex.avail==='orange' ? null : 'orange'}); render(); }));
+        tags.appendChild(tg('1× Multi','tag-multi'        + (ex.multi==='1x' ? ' on-1x' : ''), () => { setEx(day.key, i, {multi: ex.multi==='1x' ? null : '1x'}); render(); }));
+        tags.appendChild(tg('2× Multi','tag-multi'        + (ex.multi==='2x' ? ' on-2x' : ''), () => { setEx(day.key, i, {multi: ex.multi==='2x' ? null : '2x'}); render(); }));
+        inner.appendChild(tags);
+
+        if (ex.note) {
+          const nl = document.createElement('div');
+          nl.className = 'note-line';
+          nl.textContent = ex.note;
+          inner.appendChild(nl);
+        }
+      }
+      row.appendChild(inner);
+
+      // Actions (zawsze widoczne po hover, edycja dla każdego)
+      const actions = document.createElement('div');
+      actions.className = 'row-actions';
+
+      if (isEdit) {
+        const ok = document.createElement('button');
+        ok.className = 'act-btn ok'; ok.textContent = '✓';
+        ok.addEventListener('click', () => saveEdit(day.key));
+        actions.appendChild(ok);
+      } else {
+        const ed = document.createElement('button');
+        ed.className = 'act-btn edit'; ed.textContent = '✎'; ed.title = 'Edytuj imię';
+        ed.addEventListener('click', () => { state.editing = {dk: day.key, idx: i}; state.editVal = name; render(); });
+        actions.appendChild(ed);
+
+        const dl = document.createElement('button');
+        dl.className = 'act-btn del'; dl.textContent = '✕'; dl.title = 'Usuń';
+        dl.addEventListener('click', () => {
+          if (confirm(`Usunąć "${name}" z listy?`)) removePlayer(day.key, i);
+        });
+        actions.appendChild(dl);
+      }
+      row.appendChild(actions);
+      list.appendChild(row);
+    });
+  }
+  card.appendChild(list);
+
+  // ── Add section ──
+  const addSec = document.createElement('div');
+  addSec.className = 'add-section';
+
+  const nameRow = document.createElement('div');
+  nameRow.className = 'add-name-row';
+
+  const inp = document.createElement('input');
+  inp.className = 'add-input' + (err ? ' err' : '');
+  inp.type = 'text';
+  inp.placeholder = 'Imię i nazwisko…';
+  inp.value = state.inputs[day.key] || '';
+  inp.addEventListener('input', e => {
+    state.inputs[day.key] = e.target.value;
+    if (state.errors[day.key]) { state.errors[day.key] = null; render(); }
+  });
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') addPlayer(day.key); });
+
+  const addB = document.createElement('button');
+  addB.className = 'add-btn';
+  addB.disabled = !!saving;
+  addB.innerHTML = saving ? '<span class="spinner"></span>' : '+';
+  addB.addEventListener('click', () => addPlayer(day.key));
+
+  nameRow.appendChild(inp);
+  nameRow.appendChild(addB);
+  addSec.appendChild(nameRow);
+
+  // Options
+  const opts = document.createElement('div');
+  opts.className = 'add-opts-row';
+
+  const ca = state.fAvail[day.key];
+  const cm = state.fMulti[day.key];
+
+  const op = (label, cls, onClick) => {
+    const s = document.createElement('span');
+    s.className = 'opt-tag ' + cls;
+    s.textContent = label;
+    s.addEventListener('click', onClick);
+    return s;
+  };
+
+  opts.appendChild(op('● Pewny',   ca==='green'  ? 'sel-green'  : '', () => { state.fAvail[day.key] = ca==='green'  ? null : 'green';  render(); }));
+  opts.appendChild(op('◐ Może',    ca==='orange' ? 'sel-orange' : '', () => { state.fAvail[day.key] = ca==='orange' ? null : 'orange'; render(); }));
+  opts.appendChild(op('1× Multi',  cm==='1x'     ? 'sel-1x'     : '', () => { state.fMulti[day.key] = cm==='1x'     ? null : '1x';     render(); }));
+  opts.appendChild(op('2× Multi',  cm==='2x'     ? 'sel-2x'     : '', () => { state.fMulti[day.key] = cm==='2x'     ? null : '2x';     render(); }));
+
+  const ni = document.createElement('input');
+  ni.className = 'note-input';
+  ni.type = 'text';
+  ni.placeholder = 'Uwaga…';
+  ni.value = state.fNote[day.key] || '';
+  ni.addEventListener('input', e => state.fNote[day.key] = e.target.value);
+  opts.appendChild(ni);
+
+  addSec.appendChild(opts);
+
+  if (err) {
+    const errDiv = document.createElement('div');
+    errDiv.className = 'add-error';
+    errDiv.textContent = err === 'NOT_ON_LIST'
+      ? '⚠ Nie znaleziono na liście graczy. Skontaktuj się z organizatorem.'
+      : '⚠ ' + err;
+    addSec.appendChild(errDiv);
+  }
+
+  card.appendChild(addSec);
+  return card;
+}
+
+render();
+Promise.all(state.days.map(loadDay));
+</script>
+</body>
+</html>
