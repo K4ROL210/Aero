@@ -486,7 +486,7 @@ body::before {
 <body>
 
 <script>
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4sxEGupPDwmc9pcYoQ9g0BaAqtRQMc4c9PakbYms5Te8wVA2-mokALYovVTEMqUGLHg/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwWpjxsBltmthPsnVHxMZyeElNMk7LLnZddctCGhS3ZhlJtYaEFpGgjUu4RTzMFvfT1wQ/exec";
   const CUTOFF_HOUR = 13;
 </script>
 
@@ -651,14 +651,14 @@ async function saveEdit(dk) {
 // ── Render ────────────────────────────────────────────
 function saveFormToStorage(dk) {
   try {
-    localStorage.setItem('form_' + dk, JSON.stringify({
+    const val = JSON.stringify({
       name:  state.inputs[dk] || '',
       avail: state.fAvail[dk] || null,
       multi: state.fMulti[dk] || null,
       note:  state.fNote[dk]  || '',
-    }));
-  } catch(e) {}
-}
+    });
+    console.log('saving', 'form_' + dk, val);
+    localStorage.setItem('form_' + dk, val);
 
 function loadFormFromStorage() {
   for (const day of state.days) {
