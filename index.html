@@ -266,6 +266,13 @@ body::before {
   user-select: none;
   pointer-events: none;
 }
+.tag.clickable {
+  pointer-events: auto;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.tag.clickable:hover { opacity: 0.75; }
+  
 
 .tag-green  { border-color: var(--green);  color: var(--green);  background: var(--green-lt); }
 .tag-orange { border-color: var(--orange); color: var(--orange); background: var(--orange-lt); }
@@ -479,7 +486,7 @@ body::before {
 <body>
 
 <script>
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZL3jjDSiF5n_ZLXFGcy7XRuOAchRMZNfFD5-Xca5dmCS0haJ7Ay1LLHSWVxRq1ECQwA/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4sxEGupPDwmc9pcYoQ9g0BaAqtRQMc4c9PakbYms5Te8wVA2-mokALYovVTEMqUGLHg/exec";
   const CUTOFF_HOUR = 13;
 </script>
 
@@ -590,6 +597,7 @@ async function addPlayer(dk) {
       state.lists[dk]  = r.players;
       state.extras[dk] = r.extra || {};
       state.inputs[dk] = ''; state.fAvail[dk] = null; state.fMulti[dk] = null; state.fNote[dk] = '';
+try { localStorage.removeItem('form_' + dk); } catch(e) {}
     } else {
       state.errors[dk] = r.error;
     }
@@ -621,8 +629,51 @@ async function saveEdit(dk) {
     }
   } catch(e) {}
 }
+  async function toggleAvail(dk, idx, currentAvail) {
+  const day = state.days.find(d => d.key === dk);
+  const newAvail = currentAvail === 'green' ? 'orange' : 'green';
+  try {
+    const r = await api({
+      action: 'setAvail',
+      dayKey: dk,
+      dateStr: dateKey(day.date),
+      idx,
+      avail: newAvail,
+      password: '__public__'
+    });
+    if (r.ok) {
+      state.extras[dk] = r.extra || {};
+      render();
+    }
+  } catch(e) {}
+}
 
 // ── Render ────────────────────────────────────────────
+function saveFormToStorage(dk) {
+  try {
+    localStorage.setItem('form_' + dk, JSON.stringify({
+      name:  state.inputs[dk] || '',
+      avail: state.fAvail[dk] || null,
+      multi: state.fMulti[dk] || null,
+      note:  state.fNote[dk]  || '',
+    }));
+  } catch(e) {}
+}
+
+function loadFormFromStorage() {
+  for (const day of state.days) {
+    try {
+      const raw = localStorage.getItem('form_' + day.key);
+      if (!raw) continue;
+      const d = JSON.parse(raw);
+      if (d.name)  state.inputs[day.key] = d.name;
+      if (d.avail) state.fAvail[day.key] = d.avail;
+      if (d.multi) state.fMulti[day.key] = d.multi;
+      if (d.note)  state.fNote[day.key]  = d.note;
+    } catch(e) {}
+  }
+}
+  
 function render() {
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
@@ -714,18 +765,18 @@ function mkCard(day) {
         const tags = document.createElement('div');
         tags.className = 'tags-row';
 
-        const addTag = (label, cls) => {
-          const t = document.createElement('span');
-          t.className = 'tag ' + cls;
-          t.textContent = label;
-          // Celowo brak addEventListener — tagi są read-only
-          tags.appendChild(t);
-        };
+        const addTag = (label, cls, onClick) => {
+  const t = document.createElement('span');
+  t.className = 'tag ' + cls + (onClick ? ' clickable' : '');
+  t.textContent = label;
+  if (onClick) t.addEventListener('click', onClick);
+  tags.appendChild(t);
+};
 
-        if (ex.avail === 'green')  addTag('● Pewny',   'tag-green');
-        if (ex.avail === 'orange') addTag('◐ Może',    'tag-orange');
-        if (ex.multi === '1x')     addTag('1× Multi',  'tag-blue1');
-        if (ex.multi === '2x')     addTag('2× Multi',  'tag-blue2');
+        if (ex.avail === 'green')  addTag('● Pewny',  'tag-green',  () => toggleAvail(day.key, i, 'green'));
+if (ex.avail === 'orange') addTag('◐ Może',   'tag-orange', () => toggleAvail(day.key, i, 'orange'));
+if (ex.multi === '1x')     addTag('1× Multi', 'tag-blue1');
+if (ex.multi === '2x')     addTag('2× Multi', 'tag-blue2');
 
         if (tags.children.length > 0) inner.appendChild(tags);
 
@@ -792,10 +843,11 @@ function mkCard(day) {
   inp.type = 'text';
   inp.placeholder = 'Imię i nazwisko…';
   inp.value = state.inputs[day.key] || '';
-  inp.addEventListener('input', e => {
-    state.inputs[day.key] = e.target.value;
-    if (state.errors[day.key]) { state.errors[day.key] = null; render(); }
-  });
+ inp.addEventListener('input', e => {
+  state.inputs[day.key] = e.target.value;
+  saveFormToStorage(day.key);
+  if (state.errors[day.key]) { state.errors[day.key] = null; render(); }
+});
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') addPlayer(day.key); });
 
   const addB = document.createElement('button');
@@ -823,17 +875,17 @@ function mkCard(day) {
     return s;
   };
 
-  opts.appendChild(mkOpt('● Pewny',  'sel-green',  ca === 'green',  () => { state.fAvail[day.key] = ca === 'green'  ? null : 'green';  render(); }));
-  opts.appendChild(mkOpt('◐ Może',   'sel-orange', ca === 'orange', () => { state.fAvail[day.key] = ca === 'orange' ? null : 'orange'; render(); }));
-  opts.appendChild(mkOpt('1× Multi', 'sel-1x',     cm === '1x',     () => { state.fMulti[day.key] = cm === '1x'     ? null : '1x';     render(); }));
-  opts.appendChild(mkOpt('2× Multi', 'sel-2x',     cm === '2x',     () => { state.fMulti[day.key] = cm === '2x'     ? null : '2x';     render(); }));
+opts.appendChild(mkOpt('● Pewny',  'sel-green',  ca === 'green',  () => { state.fAvail[day.key] = ca === 'green'  ? null : 'green';  saveFormToStorage(day.key); render(); }));
+opts.appendChild(mkOpt('◐ Może',   'sel-orange', ca === 'orange', () => { state.fAvail[day.key] = ca === 'orange' ? null : 'orange'; saveFormToStorage(day.key); render(); }));
+opts.appendChild(mkOpt('1× Multi', 'sel-1x',     cm === '1x',     () => { state.fMulti[day.key] = cm === '1x'     ? null : '1x';     saveFormToStorage(day.key); render(); }));
+opts.appendChild(mkOpt('2× Multi', 'sel-2x',     cm === '2x',     () => { state.fMulti[day.key] = cm === '2x'     ? null : '2x';     saveFormToStorage(day.key); render(); }));
 
   const ni = document.createElement('input');
   ni.className = 'note-input';
   ni.type = 'text';
   ni.placeholder = 'Uwaga…';
   ni.value = state.fNote[day.key] || '';
-  ni.addEventListener('input', e => state.fNote[day.key] = e.target.value);
+  ni.addEventListener('input', e => { state.fNote[day.key] = e.target.value; saveFormToStorage(day.key); });
   opts.appendChild(ni);
 
   addSec.appendChild(opts);
@@ -852,6 +904,7 @@ function mkCard(day) {
   return card;
 }
 
+loadFormFromStorage();
 render();
 Promise.all(state.days.map(loadDay));
 </script>
