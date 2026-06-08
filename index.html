@@ -486,7 +486,7 @@ body::before {
 <body>
 
 <script>
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwWpjxsBltmthPsnVHxMZyeElNMk7LLnZddctCGhS3ZhlJtYaEFpGgjUu4RTzMFvfT1wQ/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzRhnViRukkBwicIaieW1dsvjV30ILHKvL4Y0itb4yn51dIdID9KUoQONcng5AtBBu5lA/exec";
   const CUTOFF_HOUR = 13;
 </script>
 
@@ -620,7 +620,7 @@ async function saveEdit(dk) {
   if (!state.editing) return;
   const day = state.days.find(d => d.key === dk);
   try {
-    const r = await api({ action:'edit', dayKey:dk, dateStr:dateKey(day.date), idx:state.editing.idx, newName:state.editVal, password:'__public__' });
+    const r = await api({ action:'edit', dayKey:dk, dateStr:dateKey(day.date), idx:state.editing.idx, newName:state.editVal, newNote:state.editNote ?? '', password:'__public__' });
     if (r.ok) {
       state.lists[dk]  = r.players;
       state.extras[dk] = r.extra || {};
@@ -745,7 +745,7 @@ function mkCard(day) {
       const inner = document.createElement('div');
       inner.className = 'player-inner';
 
-    if (isEdit) {
+   if (isEdit) {
         const ei = document.createElement('input');
         ei.className = 'edit-input';
         ei.value = state.editVal;
@@ -755,6 +755,17 @@ function mkCard(day) {
           if (e.key === 'Escape') { state.editing = null; render(); }
         });
         inner.appendChild(ei);
+        const en = document.createElement('input');
+        en.className = 'note-input';
+        en.type = 'text';
+        en.placeholder = 'Uwaga…';
+        en.value = state.editNote || '';
+        en.addEventListener('input', e => state.editNote = e.target.value);
+        en.addEventListener('keydown', e => {
+          if (e.key === 'Enter')  saveEdit(day.key);
+          if (e.key === 'Escape') { state.editing = null; render(); }
+        });
+        inner.appendChild(en);
         setTimeout(() => ei.focus(), 0);
       } else {
         const nameEl = document.createElement('div');
@@ -809,6 +820,7 @@ function mkCard(day) {
         ed.addEventListener('click', () => {
           state.editing = { dk: day.key, idx: i };
           state.editVal = name;
+          state.editNote = ex.note || '';
           render();
         });
 
