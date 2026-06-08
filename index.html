@@ -743,7 +743,7 @@ function mkCard(day) {
       const inner = document.createElement('div');
       inner.className = 'player-inner';
 
-      if (isEdit) {
+    if (isEdit) {
         const ei = document.createElement('input');
         ei.className = 'edit-input';
         ei.value = state.editVal;
@@ -755,32 +755,29 @@ function mkCard(day) {
         inner.appendChild(ei);
         setTimeout(() => ei.focus(), 0);
       } else {
-        // Imię
         const nameEl = document.createElement('div');
         nameEl.className = 'pname' + (isAfterR ? ' dim' : '');
         nameEl.textContent = name;
         inner.appendChild(nameEl);
 
-        // Tagi — tylko do wyświetlania, NIE klikalne, NIE usuwają się
         const tags = document.createElement('div');
         tags.className = 'tags-row';
 
         const addTag = (label, cls, onClick) => {
-  const t = document.createElement('span');
-  t.className = 'tag ' + cls + (onClick ? ' clickable' : '');
-  t.textContent = label;
-  if (onClick) t.addEventListener('click', onClick);
-  tags.appendChild(t);
-};
+          const t = document.createElement('span');
+          t.className = 'tag ' + cls + (onClick ? ' clickable' : '');
+          t.textContent = label;
+          if (onClick) t.addEventListener('click', onClick);
+          tags.appendChild(t);
+        };
 
         if (ex.avail === 'green')  addTag('● Pewny',  'tag-green',  () => toggleAvail(day.key, i, 'green'));
-if (ex.avail === 'orange') addTag('◐ Może',   'tag-orange', () => toggleAvail(day.key, i, 'orange'));
-if (ex.multi === '1x')     addTag('1× Multi', 'tag-blue1');
-if (ex.multi === '2x')     addTag('2× Multi', 'tag-blue2');
+        if (ex.avail === 'orange') addTag('◐ Może',   'tag-orange', () => toggleAvail(day.key, i, 'orange'));
+        if (ex.multi === '1x')     addTag('1× Multi', 'tag-blue1');
+        if (ex.multi === '2x')     addTag('2× Multi', 'tag-blue2');
 
         if (tags.children.length > 0) inner.appendChild(tags);
 
-        // Uwaga
         if (ex.note) {
           const nl = document.createElement('div');
           nl.className = 'note-line';
