@@ -668,6 +668,7 @@ function loadFormFromStorage() {
       const raw = localStorage.getItem('form_' + day.key);
       if (!raw) continue;
       const d = JSON.parse(raw);
+      console.log('loaded from storage:', day.key, d);
       if (d.name)  state.inputs[day.key] = d.name;
       if (d.avail) state.fAvail[day.key] = d.avail;
       if (d.multi) state.fMulti[day.key] = d.multi;
