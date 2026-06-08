@@ -597,7 +597,6 @@ async function addPlayer(dk) {
       state.lists[dk]  = r.players;
       state.extras[dk] = r.extra || {};
       state.inputs[dk] = ''; state.fAvail[dk] = null; state.fMulti[dk] = null; state.fNote[dk] = '';
-try { localStorage.removeItem('form_' + dk); } catch(e) {}
     } else {
       state.errors[dk] = r.error;
     }
