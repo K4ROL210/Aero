@@ -657,8 +657,10 @@ function saveFormToStorage(dk) {
       multi: state.fMulti[dk] || null,
       note:  state.fNote[dk]  || '',
     });
-    console.log('saving', 'form_' + dk, val);
+   console.log('saving', 'form_' + dk, val);
     localStorage.setItem('form_' + dk, val);
+  } catch(e) {}
+}
 
 function loadFormFromStorage() {
   for (const day of state.days) {
