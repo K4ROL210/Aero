@@ -602,6 +602,20 @@
     }
 
     async function loadAll() {
+        // Jedno zapytanie o wszystkie dni; gdy się nie uda — każdy dzień osobno (z ponawianiem)
+        state.loadError = state.loadError || {};
+        for (const d of state.days) { state.loading[d.key] = true; state.loadError[d.key] = false; }
+        render();
+        try {
+            const days = state.days.map(d => d.key + ':' + dateKey(d.date)).join(',');
+            const r = await api({ action:'listAll', days });
+            if (r && r.ok && r.days && state.days.every(d => r.days[d.key] && Array.isArray(r.days[d.key].players))) {
+                for (const d of state.days) setData(d.key, r.days[d.key]);
+                for (const d of state.days) state.loading[d.key] = false;
+                render();
+                return;
+            }
+        } catch(e) {}
         return Promise.all(state.days.map(d => loadDay(d)));
     }
 
