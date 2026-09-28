@@ -500,6 +500,7 @@
 <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzRhnViRukkBwicIaieW1dsvjV30ILHKvL4Y0itb4yn51dIdID9KUoQONcng5AtBBu5lA/exec";
     const CUTOFF_HOUR = 13;
+    const SPREADSHEET_ID = "1J8NKvBCL-cUtBoKJ1uirTZFnhuVvp4pbJlVBxvcuHKQ";
 </script>
 
 <header class="site-header">
@@ -592,6 +593,7 @@
                 const r = await api({ action:'list', dayKey:day.key, dateStr:dateKey(day.date) });
                 if (r && r.ok && Array.isArray(r.players)) {
                     setData(day.key, r);
+                    if (state.fresh) state.fresh[day.key] = true;
                     state.loading[day.key] = false; render();
                     return;
                 }
@@ -601,16 +603,71 @@
         state.loading[day.key] = false; state.loadError[day.key] = true; render();
     }
 
+    // ── Szybki odczyt imion prosto z arkusza (wymaga: "każda osoba z linkiem może wyświetlać") ─
+    // Tagi i uwagi są tylko w Apps Script, więc dociągają się osobno w tle.
+    function sheetName(day) {
+        const d = day.date;
+        return `Zapisy ${day.label} ${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+    }
+    // Zwraca surową odpowiedź gviz ({sig, table}). Bez nazwy → pierwsza zakładka arkusza.
+    function gvizQuery(name) {
+        return new Promise((res, rej) => {
+            const cb = 'gv_' + Math.random().toString(36).slice(2);
+            let el;
+            const done = () => { window[cb] = () => { delete window[cb]; }; el && el.remove(); };
+            const t = setTimeout(() => { done(); rej(new Error('timeout')); }, 8000);
+            window[cb] = data => {
+                clearTimeout(t); delete window[cb]; el && el.remove();
+                if (!data || data.status !== 'ok' || !data.table) return rej(new Error('gviz'));
+                res(data);
+            };
+            const params = { tqx: 'out:json;responseHandler:' + cb, headers: '0', tq: 'select B', _: Date.now() };
+            if (name) params.sheet = name;
+            el = document.createElement('script');
+            el.src = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?` + new URLSearchParams(params);
+            el.onerror = () => { clearTimeout(t); done(); rej(new Error('err')); };
+            document.head.appendChild(el);
+        });
+    }
+    let gvizFallback = null;   // Promise z odpowiedzią dla pierwszej zakładki (jedna na loadAll)
+    async function gvizPlayers(day) {
+        const [data, first] = await Promise.all([gvizQuery(sheetName(day)), gvizFallback]);
+        // Gdy zakładki nie ma, Google po cichu zwraca pierwszą zakładkę — wtedy nie ufamy wynikowi
+        if (data.sig === first.sig) throw new Error('fallback sheet');
+        const colB = data.table.rows.map(r => (r.c && r.c[0] && r.c[0].v != null) ? String(r.c[0].v) : '');
+        // Tak jak getPlayers() w Apps Script: dane zaczynają się pod nagłówkiem "Imię i nazwisko"
+        const h = colB.findIndex(v => { const s = v.toLowerCase(); return s.includes('imi') || s.includes('nazwisko'); });
+        if (h < 0) throw new Error('no header');
+        return colB.slice(h + 1).filter(v => v !== '');
+    }
+    let loadGen = 0;
+    async function quickLoad(day, gen) {
+        try {
+            const players = await gvizPlayers(day);
+            if (gen !== loadGen || state.fresh[day.key]) return;   // Apps Script był szybszy
+            const prev = state.lists[day.key];
+            if (!prev || JSON.stringify(prev) !== JSON.stringify(players)) state.extras[day.key] = {};
+            state.lists[day.key] = players;
+            state.loading[day.key] = false;
+            render();
+        } catch(e) {}
+    }
+
     async function loadAll() {
         // Jedno zapytanie o wszystkie dni; gdy się nie uda — każdy dzień osobno (z ponawianiem)
         state.loadError = state.loadError || {};
+        state.fresh = {};
+        const gen = ++loadGen;
         for (const d of state.days) { state.loading[d.key] = true; state.loadError[d.key] = false; }
         render();
+        gvizFallback = gvizQuery(null);
+        gvizFallback.catch(() => {});
+        state.days.forEach(d => quickLoad(d, gen));
         try {
             const days = state.days.map(d => d.key + ':' + dateKey(d.date)).join(',');
             const r = await api({ action:'listAll', days });
             if (r && r.ok && r.days && state.days.every(d => r.days[d.key] && Array.isArray(r.days[d.key].players))) {
-                for (const d of state.days) setData(d.key, r.days[d.key]);
+                for (const d of state.days) { setData(d.key, r.days[d.key]); state.fresh[d.key] = true; }
                 for (const d of state.days) state.loading[d.key] = false;
                 render();
                 return;
