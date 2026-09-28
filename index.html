@@ -591,8 +591,7 @@
             try {
                 const r = await api({ action:'list', dayKey:day.key, dateStr:dateKey(day.date) });
                 if (r && r.ok && Array.isArray(r.players)) {
-                    state.lists[day.key]  = r.players;
-                    state.extras[day.key] = r.extra || {};
+                    setData(day.key, r);
                     state.loading[day.key] = false; render();
                     return;
                 }
@@ -603,8 +602,38 @@
     }
 
     async function loadAll() {
-        // Po kolei, żeby nie odpalać równolegle dwóch instancji Apps Script
-        for (const day of state.days) await loadDay(day);
+        return Promise.all(state.days.map(d => loadDay(d)));
+    }
+
+    // ── Cache listy w telefonie — pokazujemy od razu, świeże dane dociągamy w tle ─
+    function cacheKey(dk) {
+        const day = state.days.find(d => d.key === dk);
+        return 'list_' + dk + '_' + dateKey(day.date);
+    }
+    function setData(dk, r) {
+        if (Array.isArray(r.players)) state.lists[dk] = r.players;
+        state.extras[dk] = r.extra || {};
+        try {
+            localStorage.setItem(cacheKey(dk), JSON.stringify({ players: state.lists[dk] || [], extra: state.extras[dk] }));
+        } catch(e) {}
+    }
+    function loadListsFromCache() {
+        for (const day of state.days) {
+            try {
+                // Usuń wpisy z poprzednich terminów
+                for (let i = localStorage.length - 1; i >= 0; i--) {
+                    const k = localStorage.key(i);
+                    if (k && k.startsWith('list_' + day.key + '_') && k !== cacheKey(day.key)) localStorage.removeItem(k);
+                }
+                const raw = localStorage.getItem(cacheKey(day.key));
+                if (!raw) continue;
+                const d = JSON.parse(raw);
+                if (Array.isArray(d.players)) {
+                    state.lists[day.key]  = d.players;
+                    state.extras[day.key] = d.extra || {};
+                }
+            } catch(e) {}
+        }
     }
 
     async function addPlayer(dk) {
@@ -618,8 +647,7 @@
         try {
             const r = await api({ action:'add', dayKey:dk, dateStr:dateKey(day.date), name, avail:av, multi:mu, note:no });
             if (r.ok) {
-                state.lists[dk]  = r.players;
-                state.extras[dk] = r.extra || {};
+                setData(dk, r);
                 state.inputs[dk] = ''; state.fAvail[dk] = null; state.fMulti[dk] = null; state.fNote[dk] = '';
             } else {
                 state.errors[dk] = r.error;
@@ -633,8 +661,7 @@
         try {
             const r = await api({ action:'remove', dayKey:dk, dateStr:dateKey(day.date), idx, password:'__public__' });
             if (r.ok) {
-                state.lists[dk]  = r.players;
-                state.extras[dk] = r.extra || {};
+                setData(dk, r);
                 render();
             }
         } catch(e) {}
@@ -646,8 +673,7 @@
         try {
             const r = await api({ action:'edit', dayKey:dk, dateStr:dateKey(day.date), idx:state.editing.idx, newName:state.editVal, newNote:state.editNote ?? '', password:'__public__' });
             if (r.ok) {
-                state.lists[dk]  = r.players;
-                state.extras[dk] = r.extra || {};
+                setData(dk, r);
                 state.editing = null; render();
             }
         } catch(e) {}
@@ -665,7 +691,7 @@
                 password: '__public__'
             });
             if (r.ok) {
-                state.extras[dk] = r.extra || {};
+                setData(dk, r);
                 render();
             }
         } catch(e) {}
@@ -735,7 +761,7 @@
         const list = document.createElement('div');
         list.className = 'player-list';
 
-        if (loading) {
+        if (loading && !(day.key in state.lists)) {
             list.innerHTML = `<div class="msg-loading"><span class="spinner"></span></div>`;
         } else if (state.loadError && state.loadError[day.key] && players.length === 0) {
             const e = document.createElement('div');
@@ -950,6 +976,7 @@
     }
 
     loadFormFromStorage();
+    loadListsFromCache();
     render();
     loadAll();
 
